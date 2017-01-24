@@ -17,6 +17,13 @@ class Application(Frame):
 
 
     def createWidgets(self):
+        # canvas
+        self.canvas = Canvas(self)
+        self.canvas["bd"] = 3
+        self.canvas["height"] = 500
+        self.canvas["width"] = 500
+        self.canvas.pack()
+
         # yes button
         self.inhib = Button(self)
         self.inhib["text"] = "Yes"
