@@ -1,11 +1,17 @@
 import matplotlib
 
 matplotlib.use("TkAgg")
+
+import matplotlib.pyplot as plt
+
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg, NavigationToolbar2TkAgg
 from matplotlib.figure import Figure
 
 import Tkinter as tk
 import ttk
+
+import csv
+import itertools
 
 LARGE_FONT = ("Verdana", 12)
 
@@ -34,13 +40,39 @@ class research_gui(tk.Tk):
 
         self.show_frame(StartPage)
 
+
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
 
-    def fill_vec(self, *args):
+    def do_graphing(self, file, *args):
         self.vec.extend(args)
-        print(self.vec)
+        plt.clf()
+        y = file.next()
+        # cast to string
+        num = [int(x) for x in y]
+        N = len(num)
+        x = range(N)
+        width = 1 / 1.5
+
+        plt.bar(x, num, width)
+        plt.show()
+
+
+    def start_graphing(self, file):
+        # show the stop button
+        stop_botton = tk.Button(self, text="Stop")
+        stop_botton.pack({"side":"bottom"})
+        # get ready to plot
+        y = file.next()
+        # cast to string
+        num = [int(x) for x in y]
+        N = len(num)
+        x = range(N)
+        width = 1 / 1.5
+
+        plt.bar(x, num, width)
+        plt.show()
 
 class StartPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -64,22 +96,20 @@ class GraphPage(tk.Frame):
 
         f = Figure(figsize=(5, 5), dpi=100)
         a = f.add_subplot(111)
-        a.plot([1, 2, 3, 4, 5, 6, 7, 8], [5, 6, 1, 3, 8, 9, 3, 5])
 
-        canvas = FigureCanvasTkAgg(f, self)
-        canvas.show()
-        canvas.get_tk_widget().pack(side=tk.BOTTOM, fill=tk.BOTH, expand=True)
+        # read the file
+        file = csv.reader(open('out.csv'))
 
-        toolbar = NavigationToolbar2TkAgg(canvas, self)
-        toolbar.update()
-        canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        start_button = tk.Button(self, text="Start",
+                                 command=lambda: controller.start_graphing(file))
+        start_button.pack({"side":"bottom"})
 
         yes_button = tk.Button(self, text="Yes",
-                                command=lambda: controller.fill_vec(1))
+                                command=lambda: controller.do_graphing(file, 1))
         yes_button.pack({"side":"left"})
 
         no_button = tk.Button(self, text="No",
-                              command=lambda: controller.fill_vec(0))
+                              command=lambda: controller.do_graphing(file, 0))
         no_button.pack({"side":"right"})
 
 
