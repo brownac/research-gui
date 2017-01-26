@@ -33,10 +33,10 @@ Currently, the way to read in files is to convert `.mat` files to `.csv`. This c
 
 ```sh
 >> load('FileName.mat')
->> csvwrite('out.csv', FileName) 
+>> csvwrite('in.csv', FileName) 
 ```
 
-Once this is done, copy the `.csv` file to the root directory of this project. It is expecting the file `out.csv`, so do not change the name. In future iterations, there will be the option to upload any `.csv` file.
+Once this is done, copy the `.csv` file to the root directory of this project. It is expecting the file `in.csv`, so do not change the name. In future iterations, there will be the option to upload any `.csv` file.
 
 ### Questions and contributing
 This project is lincensed under the [MIT License](https://opensource.org/licenses/MIT) (see license.txt). If you want to contribute, please fork this repository, go crazy with it, and then submit a pull request and I promise I'll respond!  

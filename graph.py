@@ -1,7 +1,7 @@
 """
 TODO: add the functionality to either
-    1. stop the graphing at any time and export the vector or
-    2. export the vector once the reader reaches the bottom of the line
+    1. export the vector once the reader reaches the bottom of the line
+    2. add functionality for showing time of inhibition
 """
 
 
@@ -37,6 +37,7 @@ class research_gui(tk.Tk):
         self.frames = {}
 
         self.vec = []
+        self.shank_vec = []
 
         for F in (StartPage, GraphPage):
             frame = F(container, self)
@@ -56,10 +57,9 @@ class research_gui(tk.Tk):
     def do_graphing(self, file, *args):
         self.vec.extend(args)
 
-        out = open('out.txt', 'w')
-        for item in self.vec:
-            print>>out, item
-        out.close()
+        with open('out.csv', 'w') as csvfile:
+            create = csv.writer(csvfile)
+            create.writerow(self.vec)
 
         plt.clf()
         y = file.next()
@@ -85,6 +85,14 @@ class research_gui(tk.Tk):
         plt.bar(x, num, width)
         plt.show()
 
+    def handle_radio(self, *args):
+        self.shank_vec.extend(args)
+        with open('shanks.csv', 'w') as csvfile:
+            create = csv.writer(csvfile)
+            create.writerow(self.shank_vec)
+
+    def quit(self):
+        app.destroy()
 
 class StartPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -110,15 +118,18 @@ class GraphPage(tk.Frame):
         a = f.add_subplot(111)
 
         # read the file
-        file = csv.reader(open('out.csv'))
+        file = csv.reader(open('in.csv'))
 
         start_button = tk.Button(self, text="Start",
                                  command=lambda: controller.start_graphing(file))
         start_button.pack({"side":"top"})
 
         stop_botton = tk.Button(self, text="Stop",
-                                command=lambda: parent.quit())
+                                command=lambda: controller.quit())
         stop_botton.pack({"side": "bottom"})
+
+        inhib = tk.Label(self, text="Inhibitory?")
+        inhib.pack({"side":"left"})
 
         yes_button = tk.Button(self, text="Yes",
                                 command=lambda: controller.do_graphing(file, 1))
@@ -126,7 +137,22 @@ class GraphPage(tk.Frame):
 
         no_button = tk.Button(self, text="No",
                               command=lambda: controller.do_graphing(file, 0))
-        no_button.pack({"side":"right"})
+        no_button.pack({"side":"left"})
+
+        # shank stuff
+
+        no_shank = tk.Radiobutton(self, text="No",
+                                  command=lambda: controller.handle_radio(0))
+        no_shank.pack({"side":"right"})
+
+
+        yes_shank = tk.Radiobutton(self, text="Yes",
+                                   command=lambda: controller.handle_radio(1))
+
+        yes_shank.pack({"side":"right"})
+        shank = tk.Label(self, text="Shank?")
+        shank.pack({"side": "right"})
+
 
 
 app = research_gui()
