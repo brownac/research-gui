@@ -1,3 +1,10 @@
+"""
+TODO: add the functionality to either
+    1. stop the graphing at any time and export the vector or
+    2. export the vector once the reader reaches the bottom of the line
+"""
+
+
 import matplotlib
 
 matplotlib.use("TkAgg")
@@ -41,12 +48,19 @@ class research_gui(tk.Tk):
         self.show_frame(StartPage)
 
 
+
     def show_frame(self, cont):
         frame = self.frames[cont]
         frame.tkraise()
 
     def do_graphing(self, file, *args):
         self.vec.extend(args)
+
+        out = open('out.txt', 'w')
+        for item in self.vec:
+            print>>out, item
+        out.close()
+
         plt.clf()
         y = file.next()
         # cast to string
@@ -60,9 +74,6 @@ class research_gui(tk.Tk):
 
 
     def start_graphing(self, file):
-        # show the stop button
-        stop_botton = tk.Button(self, text="Stop")
-        stop_botton.pack({"side":"bottom"})
         # get ready to plot
         y = file.next()
         # cast to string
@@ -73,6 +84,7 @@ class research_gui(tk.Tk):
 
         plt.bar(x, num, width)
         plt.show()
+
 
 class StartPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -87,7 +99,7 @@ class StartPage(tk.Frame):
 class GraphPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        label = tk.Label(self, text="Graph Page!", font=LARGE_FONT)
+        label = tk.Label(self, text="Graph Page", font=LARGE_FONT)
         label.pack(pady=10, padx=10)
 
         button1 = ttk.Button(self, text="Back to Home",
@@ -102,7 +114,11 @@ class GraphPage(tk.Frame):
 
         start_button = tk.Button(self, text="Start",
                                  command=lambda: controller.start_graphing(file))
-        start_button.pack({"side":"bottom"})
+        start_button.pack({"side":"top"})
+
+        stop_botton = tk.Button(self, text="Stop",
+                                command=lambda: parent.quit())
+        stop_botton.pack({"side": "bottom"})
 
         yes_button = tk.Button(self, text="Yes",
                                 command=lambda: controller.do_graphing(file, 1))
