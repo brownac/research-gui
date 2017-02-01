@@ -18,7 +18,6 @@ import Tkinter as tk
 import ttk
 
 import csv
-import itertools
 
 LARGE_FONT = ("Verdana", 12)
 
@@ -38,6 +37,7 @@ class research_gui(tk.Tk):
 
         self.vec = []
         self.shank_vec = []
+        self.inhib_val = []
 
         for F in (StartPage, GraphPage):
             frame = F(container, self)
@@ -54,12 +54,18 @@ class research_gui(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
-    def do_graphing(self, file, *args):
+    def do_graphing(self, file, inhibfile, inhibtime, *args):
         self.vec.extend(args)
 
         with open('out.csv', 'w') as csvfile:
             create = csv.writer(csvfile)
             create.writerow(self.vec)
+
+        inhib = inhibfile.next()
+        v = [int(q) for q in inhib]
+
+        # show the actual value
+        inhibtime.config(text=v)
 
         plt.clf()
         y = file.next()
@@ -73,7 +79,14 @@ class research_gui(tk.Tk):
         plt.show()
 
 
-    def start_graphing(self, file):
+    def start_graphing(self, file, inhibfile, inhibtime):
+        # grab the contents of the inhib file
+        inhib = inhibfile.next()
+        v = [int(q) for q in inhib]
+
+        # show the actual value
+        inhibtime.config(text=v)
+
         # get ready to plot
         y = file.next()
         # cast to string
@@ -85,20 +98,24 @@ class research_gui(tk.Tk):
         plt.bar(x, num, width)
         plt.show()
 
-    def handle_radio(self, *args):
+    def handle_shank(self, *args):
         self.shank_vec.extend(args)
         with open('shanks.csv', 'w') as csvfile:
             create = csv.writer(csvfile)
             create.writerow(self.shank_vec)
 
+
     def quit(self):
         app.destroy()
+
 
 class StartPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        label = tk.Label(self, text="Start Page", font=LARGE_FONT)
+        label = tk.Label(self, text="Home Page", font=LARGE_FONT)
         label.pack(pady=10, padx=10)
+        instructions = tk.Label(self, text="Usage: press 'Start' to start. Determine if there is a shank first, then whether there is an inhibitory period.")
+        instructions.pack(pady=10, padx=10)
 
         button = ttk.Button(self, text="Graph Page", command=lambda: controller.show_frame(GraphPage))
         button.pack()
@@ -119,9 +136,13 @@ class GraphPage(tk.Frame):
 
         # read the file
         file = csv.reader(open('in.csv'))
+        inhibfile = csv.reader(open('inhib.csv'))
+
+        inhib_time = tk.Label(self, text="")
+        inhib_time.pack({"side": "top"})
 
         start_button = tk.Button(self, text="Start",
-                                 command=lambda: controller.start_graphing(file))
+                                 command=lambda: controller.start_graphing(file, inhibfile, inhib_time))
         start_button.pack({"side":"top"})
 
         stop_botton = tk.Button(self, text="Stop",
@@ -132,22 +153,22 @@ class GraphPage(tk.Frame):
         inhib.pack({"side":"left"})
 
         yes_button = tk.Button(self, text="Yes",
-                                command=lambda: controller.do_graphing(file, 1))
+                                command=lambda: controller.do_graphing(file, inhibfile, inhib_time, 1))
         yes_button.pack({"side":"left"})
 
         no_button = tk.Button(self, text="No",
-                              command=lambda: controller.do_graphing(file, 0))
+                              command=lambda: controller.do_graphing(file, inhibfile, inhib_time, 0))
         no_button.pack({"side":"left"})
 
         # shank stuff
 
-        no_shank = tk.Radiobutton(self, text="No",
-                                  command=lambda: controller.handle_radio(0))
+        no_shank = tk.Button(self, text="No",
+                                  command=lambda: controller.handle_shank(0))
         no_shank.pack({"side":"right"})
 
 
-        yes_shank = tk.Radiobutton(self, text="Yes",
-                                   command=lambda: controller.handle_radio(1))
+        yes_shank = tk.Button(self, text="Yes",
+                                   command=lambda: controller.handle_shank(1))
 
         yes_shank.pack({"side":"right"})
         shank = tk.Label(self, text="Shank?")
