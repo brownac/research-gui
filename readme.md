@@ -35,7 +35,7 @@ Currently, the way to read in files is to convert `.mat` files to `.csv`. This c
 
 Once this is done, copy the `.csv` file to the root directory of this project. It is expecting the file `in.csv`, so do not change the name. In future iterations, there will be the option to upload any `.csv` file.
 
-After these are installed, simply run
+After you've done all this, simply run
 ```sh
 $ python graph.py
 ```
