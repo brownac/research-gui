@@ -40,7 +40,6 @@ class research_gui(tk.Tk):
         self.frames = {}
 
         self.vec = []
-        self.shank_vec = []
         self.inhib_val = []
 
         for F in (StartPage, GraphPage):
@@ -58,7 +57,7 @@ class research_gui(tk.Tk):
         frame = self.frames[cont]
         frame.tkraise()
 
-    def do_graphing(self, file, inhibfile, inhibtime, *args):
+    def do_graphing(self, file, inhibfile, inhibtime, shankfile, shankval, *args):
         self.vec.extend(args)
 
         with open('out.csv', 'w') as csvfile:
@@ -70,6 +69,13 @@ class research_gui(tk.Tk):
 
         # show the actual value
         inhibtime.config(text=v)
+
+        shank = shankfile.next()
+        z = [int(t) for t in shank]
+        if z[2] == z[3]:
+            shankval.config(text="Y")
+        else:
+            shankval.config(text="N")
 
         plt.clf()
         y = file.next()
@@ -83,13 +89,21 @@ class research_gui(tk.Tk):
         plt.show()
 
 
-    def start_graphing(self, file, inhibfile, inhibtime):
+    def start_graphing(self, file, inhibfile, inhibtime, shankfile, shankval):
         # grab the contents of the inhib file
         inhib = inhibfile.next()
         v = [int(q) for q in inhib]
 
         # show the actual value
         inhibtime.config(text=v)
+
+        # shank stuff
+        shank = shankfile.next()
+        z = [int(t) for t in shank]
+        if z[2] == z[3]:
+            shankval.config(text="Y")
+        else:
+            shankval.config(text="N")
 
         # get ready to plot
         y = file.next()
@@ -101,12 +115,6 @@ class research_gui(tk.Tk):
 
         plt.bar(x, num, width)
         plt.show()
-
-    def handle_shank(self, *args):
-        self.shank_vec.extend(args)
-        with open('shanks.csv', 'w') as csvfile:
-            create = csv.writer(csvfile)
-            create.writerow(self.shank_vec)
 
 
     def quit(self):
