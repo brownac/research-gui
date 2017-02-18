@@ -1,7 +1,5 @@
 """
 TODO: add the functionality to either
-    1. export the vector once the reader reaches the bottom of the line
-    2. more cleaning up
 """
 
 
@@ -86,7 +84,7 @@ class research_gui(tk.Tk):
         width = 1 / 1.5
 
         plt.bar(x, num, width)
-        plt.show()
+        plt.draw()
 
 
     def start_graphing(self, file, inhibfile, inhibtime, shankfile, shankval):
@@ -119,10 +117,6 @@ class research_gui(tk.Tk):
 
     def quit(self):
         app.destroy()
-
-
-
-
 
 
 app = research_gui()
